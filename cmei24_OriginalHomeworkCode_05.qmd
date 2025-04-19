@@ -39,7 +39,7 @@ coef(range_body_model)
 ```
 
 ```{r}
-coef(range_body_model)[[2]]
+coef(range_body_model)[[2]] # This only shows the beta slope coefficient
 ```
 
 Let's plot this!
@@ -64,9 +64,9 @@ Let's assume that we will bootstrap 1000 times using samples of total number of 
 set.seed(1)
 beta_collection = NULL
 for (i in 1:1000){
-  sample_rows <- KC_data[sample(nrow(KC_data), 20, replace = TRUE),]
+  sample_rows <- KC_data[sample(nrow(KC_data), 20, replace = TRUE),]# We will bootstrap samples of 20 from the entire sample with replacement
   sample_model <- lm(data = sample_rows, Log_HomeRange_km2 ~ Log_Body_mass_female_mean)
-  beta_collection <- c(beta_collection, coef(sample_model)[[2]])
+  beta_collection <- c(beta_collection, coef(sample_model)[[2]]) # Store only the slope term
 }
 
 beta_collection
@@ -109,7 +109,7 @@ To get CI from the original model:
 
 ```{r}
 og_ci_beta <- confint(range_body_model)
-og_ci_beta[4]
+og_ci_beta
 ```
 
 Compared to the bootstrapped CI, both values are very similar with the 97.5 quantile being higher in the bootstrapped dataset and the 2.5 quantile being higher in the original dataset.
@@ -159,7 +159,7 @@ test_function
 ```
 
 ```{r}
-test_function[1,3]
+test_function[1,3] # This is to get the beta coef from the bootstrapped lm
 ```
 
 Everything checks out with what we calculated above!
@@ -169,24 +169,24 @@ Everything checks out with what we calculated above!
 Graph each beta value from the linear model and its corresponding mean value, lower CI and upper CI from a bootstrap as a function of number of bootstraps from 10 to 200 by 10s. HINT: the beta value from the linear model will be the same for all bootstraps and the mean beta value may not differ that much!
 
 ```{r}
-n_boot_list <- seq(10, 200, by = 10)
+n_boot_list <- seq(10, 200, by = 10) # Establish a list of numbers that will go from 10 to 200 in intervals of 10
 
-graph_df <- data.frame(
+graph_df <- data.frame( # Create an empty data frame to add our data to
   n_boot = numeric(),
   beta_coef = numeric(),
   lower_CI = numeric(),
   upper_CI = numeric()
 )
 
-for(i in n_boot_list){
+for(i in n_boot_list){ # Go through the list of the n_boot_list and use i as the bootstrap sample parameter in the custom lm_bootstrap() function
   
   boot_results <- lm_bootstrap(KC_data, range_body_model, m = "Log_HomeRange_km2 ~ Log_Body_mass_female_mean", n = i)
   
-  values_for_df <- data.frame(n_boot = i,
+  values_for_df <- data.frame(n_boot = i, # Add the values obtained into a single row data frame. We need to rearrange the results becuase the function yields some different orders
                               beta_coef = boot_results[1,3],
                               lower_CI = boot_results[3,3],
                               upper_CI = boot_results[4,3])
-  graph_df <- rbind(graph_df, values_for_df)
+  graph_df <- rbind(graph_df, values_for_df) # Add the single row data frame into the larger dataframe
 }
 
 head(graph_df)

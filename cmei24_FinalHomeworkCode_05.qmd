@@ -58,7 +58,7 @@ We need to see how many total entries we have in the dataset:
 length(KC_data$Log_Body_mass_female_mean)
 ```
 
-Let's assume that we will bootstrap 1000 times using samples of total number of entries with replacement
+Let's assume that we will bootstrap 1000 times using samples of 20 entries with replacement. This number of samples was completely arbitrary but it should be a good starting point to illustrate the bootstrapping.
 
 ```{r}
 set.seed(1)
